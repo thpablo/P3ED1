@@ -33,9 +33,9 @@ void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, 
 int isValidPosition(Position newPosition, Maze *maze);
 
 // Caminhamento em Pre Ordem para encontrar os caminhos
-void preOrdem(Node *pRoot, char flag, int level, Route *rotaAtual, Route *rotaFinal);
+void treeWalking(Maze *, Node *pRoot, char flag, int level, Route *rotaAtual, Route *rotaFinal);
 
 // Printa Rota
-void printRoute(Route *);
+void printRoute(Route *, int length);
 
 #endif // TREE_H

@@ -68,7 +68,6 @@ void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, 
   }
   //Marca posicao como visitada
   maze->visited[mousePos.row][mousePos.col] = true;
-
   Position actions[4] = {{0,1}, {1,0}, {0,-1}, {-1,0}};
 
   for(int i = 0; i < 4; i++){
@@ -104,50 +103,54 @@ void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, 
   return;
 }
 
-void printRoute(Route *rota){
+void printRoute(Route *rota, int length){
+  printf("Tamanho do caminho: %d\n", length);
   for(int i = 0; i < rota->length; i++){
     printf("r: %d, c: %d\n", rota->positions[i].row, rota->positions[i].col);
   }
 }
 
+/* Copia posicoes para a rota */
 void copyPositions(Route *send, Route *receive, int length){
   for(int i = 0; i < length; i++){
-    addPosition(receive, send->positions[i]);
+    addPosition(receive, send->positions[i], i);
   }
 }
 
+/* Copia a rota auxiliar (send) para outra rota (receive) */
 void copyRoute(Route *send, Route *receive, int length){
   copyPositions(send, receive, length);
   receive->length = length;
   receive->isFirstRout = false;
-  //printf("S: level: %d, Atual length: %d  Final length: %d isFirst: %d\n", level, rotaAtual->length, rotaFinal->length, rotaFinal->isFirstRout);
 }
 
-void preOrdem(Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal){
-  if(pRoot == NULL){
+void treeWalking(Maze *maze, Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal){
+  if(pRoot == NULL)
     return;
-  }
-  addPosition(rotaAtual, pRoot->posNode); //Adiciona rota no RotaAtual
 
-  // Se o no e a saida
+  addPosition(rotaAtual, pRoot->posNode, rotaAtual->length); //Adiciona rota no RotaAtual
+
+  /* Se a ultima folha esta na saida do labirinto*/
   if(pRoot->isExit){
     switch(flag){
       case 's': //Menor Caminho
-        //Caso seja a primeira rota ou o tamanho do caminho < tamanho da rota final
         if(rotaFinal->isFirstRout || lengthRoute < rotaFinal->length)
            copyRoute(rotaAtual, rotaFinal, lengthRoute);
       break;
-      case 'g': //Maior  caminho
-        if(rotaFinal->isFirstRout || rotaFinal->length < lengthRoute)
-          copyRoute(rotaAtual, rotaFinal, lengthRoute);
+      case 'g': //Maior caminho
+        if(rotaFinal->isFirstRout ||  lengthRoute > rotaFinal->length)
+          copyRoute(rotaAtual, rotaFinal, lengthRoute);         
       break;
     }
   }
-  preOrdem(pRoot->right, flag, pRoot->sizeCurrentBranch + 1, rotaAtual, rotaFinal);
-  preOrdem(pRoot->down, flag, pRoot->sizeCurrentBranch + 1, rotaAtual, rotaFinal);
-  preOrdem(pRoot->left, flag, pRoot->sizeCurrentBranch + 1, rotaAtual, rotaFinal);
-  preOrdem(pRoot->up, flag, pRoot->sizeCurrentBranch + 1, rotaAtual, rotaFinal);
-
-  removePosition(rotaAtual, lengthRoute - 1);
   
+  /* Funcoes recursivas usando os nos filhos */
+  treeWalking(maze, pRoot->right, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
+  treeWalking(maze, pRoot->down, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
+  treeWalking(maze, pRoot->left, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
+  treeWalking(maze, pRoot->up, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
+
+  /* Remove posicao da rota atual conforme volta na arvore */
+  removePosition(rotaAtual);
+
 }

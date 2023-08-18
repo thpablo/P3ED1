@@ -49,6 +49,7 @@ void printMaze(Maze *maze) {
   }
 }
 
+// Adiciona pontos no labirinto com base na rota 
 void insertPointsRouteInMaze(Maze *maze, Route *finalRoute){
   for(int i = 0; i < finalRoute->length; i++){
     maze->maze[finalRoute->positions[i].row][finalRoute->positions[i].col] = '.';
@@ -84,7 +85,6 @@ void freeMaze(Maze *maze) {
 
 
 // Definições de Route
-
 Route *createRoute() {
   Route *route = (Route *)malloc(sizeof(Route));
 
@@ -103,28 +103,39 @@ Route *createRoute() {
 }
 
 /* Adiciona posicoes em uma rota */
-void addPosition(Route *route, Position pos) {
+void addPosition(Route *route, Position pos, int indexToAdd) {
   route->length++;
+  //Realoca tamanho do vetor para nova posicao com base no tamanho da rota
   route->positions = (Position *)realloc(route->positions, route->length * sizeof(Position));
-  route->positions[route->length - 1] = pos;
+  //Adiciona posicao o index informado
+  route->positions[indexToAdd] = pos;
+  //Indica que nao e a primeira rota
   route->isFirstRout = false;
 }
 
 /* Remove posicoes em uma rota */
-void removePosition(Route *route, int indexToRemove) {
-    if (indexToRemove < 0 || indexToRemove >= route->length) {
-        // Índice inválido, não há nada para remover
-        return;
+void removePosition(Route *route) {
+  if (route == NULL || route->length <= 0) {
+        return; // Verificação básica de entrada inválida
     }
-    // Deslocar elementos para preencher a posição que será removida
-    for (int i = indexToRemove; i < route->length - 1; i++) {
-        route->positions[i] = route->positions[i + 1];
-    }
-    // Diminuir o comprimento da rota
-    route->length--;
 
-    // Redimensionar o array de posições
-    route->positions = (Position *)realloc(route->positions, route->length * sizeof(Position));
+    if (route->length == 1) {
+        free(route->positions); // Se só houver uma posição, libere o array
+        route->positions = NULL;
+        route->length = 0;
+    } else {
+        // Cria um novo array de posições o tamanho reduzido
+        Position *newPositions = (Position *)malloc((route->length - 1) * sizeof(Position));
+        
+        // Copia as posições do array original para o novo array
+        for (int i = 0; i < route->length - 1; i++) {
+            newPositions[i] = route->positions[i];
+        }
+        free(route->positions);
+        // Rota recebe as novas posicoes
+        route->positions = newPositions;
+        route->length--;
+    }
 }
 
 void freeRoute(Route *route) {

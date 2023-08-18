@@ -24,9 +24,9 @@ typedef struct {
 } Maze;
 
 typedef struct {
-    Position *positions; // Array de posições
-    int length; // Comprimento do caminho
-    bool isFirstRout;
+    Position *positions;    // Array de posições
+    int length;             // Comprimento do caminho
+    bool isFirstRout;       //Indica se e a primeira rota para adicionar em Rota Final
 } Route;
 // Funções do Maze
 
@@ -46,8 +46,9 @@ void insertPointsRouteInMaze(Maze *maze, Route *finalRoute);
 Route *createRoute();
 
 // Função para adicionar uma posição ao caminho
-void addPosition(Route *route, Position pos);
-void removePosition(Route *route, int indexToRemove);
+void addPosition(Route *route, Position pos, int index);
+// Função para remover uma posição ao caminho
+void removePosition(Route *route);
  
 // Função para liberar a memória do caminho
 void freeRoute(Route *route);
