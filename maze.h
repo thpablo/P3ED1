@@ -8,11 +8,6 @@ typedef struct {
     int row, col; // Coordenadas: linha, coluna
 } Position;
 
-typedef struct level{
-    struct level *nextLevel;
-    Position key;
-} Level;
-
 typedef struct {
     char **maze; // Matriz de caracteres representando o labirinto
     char flag; // Caractere que representa o tipo de saída
@@ -47,6 +42,11 @@ Route *createRoute();
 
 // Função para adicionar uma posição ao caminho
 void addPosition(Route *route, Position pos, int index);
+
+//Funcoes para copiar posicoes e rota 
+void copyPositions(Route *send, Route *receive, int length);
+void copyRoute(Route *send, Route *receive, int length);
+
 // Função para remover uma posição ao caminho
 void removePosition(Route *route);
  

@@ -138,6 +138,20 @@ void removePosition(Route *route) {
     }
 }
 
+/* Copia posicoes para a rota */
+void copyPositions(Route *send, Route *receive, int length){
+  for(int i = 0; i < length; i++){
+    addPosition(receive, send->positions[i], i);
+  }
+}
+
+/* Copia a rota auxiliar (send) para outra rota (receive) */
+void copyRoute(Route *send, Route *receive, int length){
+  copyPositions(send, receive, length);
+  receive->length = length;
+  receive->isFirstRout = false;
+}
+
 void freeRoute(Route *route) {
   free(route->positions);
   free(route);

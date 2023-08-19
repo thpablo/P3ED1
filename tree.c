@@ -2,7 +2,7 @@
 
 #include "tree.h"
 #include "maze.h"
-
+#include "levels.h"
 
 void initTree(Node **pRoot){
     *pRoot = NULL;
@@ -58,9 +58,12 @@ int isValidPosition(Position newPosition, Maze *maze){
 }
 
 
-void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, bool *hasExit){
+void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, int* highestSizeBranch, bool *hasExit){
   struct node *noUsado;
   //Caso Base
+  if(currentSize > *highestSizeBranch)
+    *highestSizeBranch = currentSize;
+
   if(mousePos.col == maze->exit.col && mousePos.row == maze->exit.row){
     noAtual->isExit = true; // O no é uma saida
     *hasExit = true;        // O labirinto contem uma saida
@@ -77,29 +80,31 @@ void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, 
           case 0: //Direita
             noAtual->right = insertNode(newPosition, currentSize);
             noUsado = noAtual->right;
-            find(maze, noUsado, newPosition, currentSize + 1, hasExit);
+            find(maze, noUsado, newPosition, currentSize + 1, highestSizeBranch, hasExit);
             break;
           case 1: //Baixo
             noAtual->down = insertNode(newPosition, currentSize);            
             noUsado = noAtual->down;
-            find(maze, noUsado, newPosition, currentSize + 1, hasExit);
+            find(maze, noUsado, newPosition, currentSize + 1, highestSizeBranch, hasExit);
 
             break;
           case 2: //Esquerda
             noAtual->left = insertNode(newPosition, currentSize);
             noUsado = noAtual->left;
-            find(maze, noUsado, newPosition, currentSize + 1, hasExit);
+            find(maze, noUsado, newPosition, currentSize + 1, highestSizeBranch, hasExit);
             break;
           case 3: //Cima
             noAtual->up = insertNode(newPosition, currentSize);
             noUsado = noAtual->up;
-            find(maze, noUsado, newPosition, currentSize + 1, hasExit);
+            find(maze, noUsado, newPosition, currentSize + 1, highestSizeBranch, hasExit);
             break;
         }
     }    
   }
+
   //Desmarca posicao como visitada
   maze->visited[mousePos.row][mousePos.col] = false;
+
   return;
 }
 
@@ -110,25 +115,13 @@ void printRoute(Route *rota, int length){
   }
 }
 
-/* Copia posicoes para a rota */
-void copyPositions(Route *send, Route *receive, int length){
-  for(int i = 0; i < length; i++){
-    addPosition(receive, send->positions[i], i);
-  }
-}
 
-/* Copia a rota auxiliar (send) para outra rota (receive) */
-void copyRoute(Route *send, Route *receive, int length){
-  copyPositions(send, receive, length);
-  receive->length = length;
-  receive->isFirstRout = false;
-}
-
-void treeWalking(Maze *maze, Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal){
+void treeWalking(Maze *maze, Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal,  Levels *listLevel){
   if(pRoot == NULL)
     return;
 
   addPosition(rotaAtual, pRoot->posNode, rotaAtual->length); //Adiciona rota no RotaAtual
+  insertInListLevels(listLevel, pRoot->posNode, lengthRoute);
 
   /* Se a ultima folha esta na saida do labirinto*/
   if(pRoot->isExit){
@@ -145,10 +138,10 @@ void treeWalking(Maze *maze, Node *pRoot, char flag, int lengthRoute, Route *rot
   }
   
   /* Funcoes recursivas usando os nos filhos */
-  treeWalking(maze, pRoot->right, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
-  treeWalking(maze, pRoot->down, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
-  treeWalking(maze, pRoot->left, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
-  treeWalking(maze, pRoot->up, flag, rotaAtual->length + 1, rotaAtual, rotaFinal);
+  treeWalking(maze, pRoot->right, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
+  treeWalking(maze, pRoot->down, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
+  treeWalking(maze, pRoot->left, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
+  treeWalking(maze, pRoot->up, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
 
   /* Remove posicao da rota atual conforme volta na arvore */
   removePosition(rotaAtual);

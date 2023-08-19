@@ -5,6 +5,7 @@
 
 #include "maze.h"
 #include "tree.h"
+#include "levels.h"
 
 #define TAM_MAX INT_MAX
 
@@ -24,6 +25,7 @@ int main() {
   scanf("%d %d", &x, &y);
   char flag;  //Flag para escolha do maior ou menor caminho
   scanf(" %c", &flag);
+
   Maze *maze = createMaze(x, y);
   readMaze(maze);
 
@@ -34,24 +36,32 @@ int main() {
 
   /* Alocacao da arvore e insercao da primeira posicao (M) */
   Node *arvore = createNode(maze->begin, 0);
+  int highestSizeBranch = 0;
 
   /* Busca do caminho */
-  find(maze, arvore, mouse, arvore->sizeCurrentBranch, &(arvore->hasExit));
-
+  find(maze, arvore, mouse, arvore->sizeCurrentBranch, &highestSizeBranch, &(arvore->hasExit));
+  highestSizeBranch += 2;
   /* Criacao das duas rotas, auxiliar e rotaFinal */
   Route *routeAux = createRoute();
   Route *finalRoute = createRoute();
+
+  /* Criacao Levels */
+  Levels *listLevels = initLevels(highestSizeBranch);
 
   /* Se houver saida, apresenta rota final...*/
   if(arvore->hasExit){
     /*  Percorre a arvore e estabelece o caminho final com base na flag 
         Caminhamento em pre Ordem */
-    treeWalking(maze, arvore, flag, 0, routeAux, finalRoute);
+    treeWalking(maze, arvore, flag, 1, routeAux, finalRoute, listLevels);
     /* Insere os pontos no labirinto e mostra trajeto final */
     /* Apresenta tamanho da rota - 1, pois M esta na rota   */
     /* mas nao e considerado como parte do caminho          */
-    printf("%d\n", finalRoute->length - 1);
-    insertPointsRouteInMaze(maze, finalRoute);
+    if(flag == 'f')
+      printLevels(listLevels->listPositions, highestSizeBranch);
+    else{
+      printf("%d\n", finalRoute->length - 1);
+      insertPointsRouteInMaze(maze, finalRoute);
+    }
   }
   else  /* Caso nao tenha saida */
     printf("EPIC FAIL!\n"); 

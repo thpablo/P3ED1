@@ -3,13 +3,14 @@
 
 #include <stdbool.h>
 #include "maze.h"
+#include "levels.h"
 
 typedef struct node{
     struct node *right;
     struct node *down;
     struct node *left;
     struct node *up;
-    int sizeCurrentBranch; //Tamanho do galho até o nó atual]
+    int sizeCurrentBranch; //Tamanho do galho até o nó atual
     bool isExit;
     bool hasExit;
     Position posNode; // Posição
@@ -27,13 +28,13 @@ Node *createNode(Position newPos, int currentSize);
 Node *insertNode(Position newPosition, int currentSize); //Inicia condicoes iniciais do No
 
 //Funcao recursiva de encontrar caminhos
-void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, bool *);
+void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, int* highestSizeBranch, bool *);
 
 //Valida posicao
 int isValidPosition(Position newPosition, Maze *maze);
 
 // Caminhamento em Pre Ordem para encontrar os caminhos
-void treeWalking(Maze *, Node *pRoot, char flag, int level, Route *rotaAtual, Route *rotaFinal);
+void treeWalking(Maze *, Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal, Levels *listLevel);
 
 // Printa Rota
 void printRoute(Route *, int length);
