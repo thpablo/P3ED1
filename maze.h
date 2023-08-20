@@ -23,6 +23,7 @@ typedef struct {
     int length;             // Comprimento do caminho
     bool isFirstRout;       //Indica se e a primeira rota para adicionar em Rota Final
 } Route;
+
 // Funções do Maze
 
 // Função para alocar memória para um labirinto
@@ -34,7 +35,12 @@ void readMaze(Maze *maze);
 // Função para desalocar memória de um labirinto
 void freeMaze(Maze *maze);
 
+// Inicia o processo no labirinto
+void start(int numRows, int numCols, char flag);
+
 // Funções do Route
+
+// Insere os pontos no labirinto
 void insertPointsRouteInMaze(Maze *maze, Route *finalRoute);
 
 // Função para criar um novo caminho

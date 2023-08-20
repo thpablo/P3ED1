@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <limits.h>
 
 #include "maze.h"
 #include "tree.h"
@@ -161,4 +160,57 @@ void copyRoute(Route *send, Route *receive, int length){
 void freeRoute(Route *route) {
   free(route->positions);
   free(route);
+}
+
+void start(int numRows, int numCols, char flag) {
+  Maze *maze = createMaze(numRows, numCols);
+  readMaze(maze);
+
+  /* Criar posicoes que ira simular o rato */
+  Position mouse;
+  mouse.col = maze->begin.col;
+  mouse.row = maze->begin.row;
+
+  /* Alocacao da arvore e insercao da primeira posicao (M) */
+  Node *arvore = createNode(maze->begin, 0);
+  int highestSizeBranch = 0;
+
+  /* Busca do caminho */
+  find(maze, arvore, mouse, arvore->sizeCurrentBranch, &highestSizeBranch, &(arvore->hasExit));
+  highestSizeBranch += 2;
+  /* Criacao das duas rotas, auxiliar e rotaFinal */
+  Route *routeAux = createRoute();
+  Route *finalRoute = createRoute();
+
+  /* Criacao Levels */
+  Levels *listLevels = NULL;
+
+  /* Se houver saida, apresenta rota final e cria TAD Levels*/
+  if(arvore->hasExit){
+    listLevels = initLevels(highestSizeBranch);
+    /*  Percorre a arvore e estabelece o caminho final com base na flag 
+        Caminhamento em Pre Ordem */
+    treeWalking(arvore, flag, 1, routeAux, finalRoute, listLevels);
+
+    /* Caso seja para mostrar os niveis */
+    if(flag == 'f')
+      printLevels(listLevels->listPositions, highestSizeBranch);
+    else{
+      /* Insere os pontos no labirinto e mostra trajeto final */
+      /* Apresenta tamanho da rota - 1, pois M esta na rota   */
+      /* mas nao e considerado como parte do caminho          */
+      printf("%d\n", finalRoute->length - 1);
+      insertPointsRouteInMaze(maze, finalRoute);
+    }
+    /* Libera Levels */
+    freeLevels(listLevels);
+  }
+  else  /* Caso nao tenha saida */
+    printf("EPIC FAIL!\n"); 
+  
+  /* Libera alocacoes */
+  freeRoute(routeAux);
+  freeRoute(finalRoute);
+  freeMaze(maze);
+  freeTree(arvore);
 }
