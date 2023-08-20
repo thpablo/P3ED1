@@ -67,7 +67,7 @@ int main() {
     printf("EPIC FAIL!\n"); 
   
   /* Libera alocacoes */
-  freeLevels(listLevels, highestSizeBranch);
+  freeLevels(listLevels);
   freeRoute(routeAux);
   freeRoute(finalRoute);
   freeMaze(maze);
