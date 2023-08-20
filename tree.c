@@ -6,7 +6,7 @@
 
 void initTree(Node **pRoot){
     *pRoot = NULL;
-    (*pRoot)->hasExit = false;
+    (*pRoot)->hasExit = false; //Inicia como falso indicando se a saida
 }
 
 Node *createNode(Position newPosition, int currentSize){
@@ -20,8 +20,8 @@ Node *createNode(Position newPosition, int currentSize){
     newNode->left = NULL;
     newNode->right = NULL;
     newNode->up = NULL;
-    newNode->sizeCurrentBranch = currentSize;
-    newNode->isExit = false;
+    newNode->sizeCurrentBranch = currentSize; //Tamanho do galho ate aquele no
+    newNode->isExit = false;                  //Inicia como falso indicando se a saida
     return newNode;
 }
 
@@ -124,7 +124,7 @@ void treeWalking(Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Rout
     return;
 
   addPosition(rotaAtual, pRoot->posNode, rotaAtual->length); //Adiciona rota no RotaAtual
-  insertInListLevels(listLevel, pRoot->posNode, lengthRoute);
+  insertInListLevels(listLevel, pRoot->posNode, lengthRoute); //Adiciona posicao na lista de Levels
 
   /* Se a ultima folha esta na saida do labirinto*/
   if(pRoot->isExit){

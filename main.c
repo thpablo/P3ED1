@@ -46,28 +46,32 @@ int main() {
   Route *finalRoute = createRoute();
 
   /* Criacao Levels */
-  Levels *listLevels = initLevels(highestSizeBranch);
+  Levels *listLevels = NULL;
 
-  /* Se houver saida, apresenta rota final...*/
+  /* Se houver saida, apresenta rota final e cria TAD Levels*/
   if(arvore->hasExit){
+    listLevels = initLevels(highestSizeBranch);
     /*  Percorre a arvore e estabelece o caminho final com base na flag 
-        Caminhamento em pre Ordem */
+        Caminhamento em Pre Ordem */
     treeWalking(arvore, flag, 1, routeAux, finalRoute, listLevels);
-    /* Insere os pontos no labirinto e mostra trajeto final */
-    /* Apresenta tamanho da rota - 1, pois M esta na rota   */
-    /* mas nao e considerado como parte do caminho          */
+
+    /* Caso seja para mostrar os niveis */
     if(flag == 'f')
       printLevels(listLevels->listPositions, highestSizeBranch);
     else{
+      /* Insere os pontos no labirinto e mostra trajeto final */
+      /* Apresenta tamanho da rota - 1, pois M esta na rota   */
+      /* mas nao e considerado como parte do caminho          */
       printf("%d\n", finalRoute->length - 1);
       insertPointsRouteInMaze(maze, finalRoute);
     }
+    /* Libera Levels */
+    freeLevels(listLevels);
   }
   else  /* Caso nao tenha saida */
     printf("EPIC FAIL!\n"); 
   
   /* Libera alocacoes */
-  freeLevels(listLevels);
   freeRoute(routeAux);
   freeRoute(finalRoute);
   freeMaze(maze);
