@@ -1,0 +1,4 @@
+*.o
+corretor.py
+*.output
+exe
