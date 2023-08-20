@@ -21,23 +21,26 @@ Node *createNode(Position newPosition, int currentSize){
     newNode->right = NULL;
     newNode->up = NULL;
     newNode->sizeCurrentBranch = currentSize;
+    newNode->isExit = false;
     return newNode;
 }
 
 Node * insertNode(Position newPosition, int currentSize){
     Node *currentNode = createNode(newPosition, currentSize);
-    currentNode->isExit = false;
     return currentNode;
 }
 
-void popNode(Node **pos){
-    if(*pos == NULL){
-        printf("Não foi possível desalocar, ponteiro nulo\n");
+void freeTree(Node *root) {
+    if (root == NULL) {
         return;
     }
-    
-    free((*pos));
-    *pos = NULL;
+
+    freeTree(root->right);
+    freeTree(root->down);
+    freeTree(root->left);
+    freeTree(root->up);
+
+    free(root);
 }
 
 
@@ -57,7 +60,7 @@ int isValidPosition(Position newPosition, Maze *maze){
   return 1;
 }
 
-
+/* Funcao recursiva para encontrar caminhos */
 void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, int* highestSizeBranch, bool *hasExit){
   struct node *noUsado;
   //Caso Base
@@ -115,8 +118,8 @@ void printRoute(Route *rota, int length){
   }
 }
 
-
-void treeWalking(Maze *maze, Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal,  Levels *listLevel){
+// Caminhamento em Pre Ordem para encontrar os caminhos
+void treeWalking(Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal,  Levels *listLevel){
   if(pRoot == NULL)
     return;
 
@@ -138,10 +141,10 @@ void treeWalking(Maze *maze, Node *pRoot, char flag, int lengthRoute, Route *rot
   }
   
   /* Funcoes recursivas usando os nos filhos */
-  treeWalking(maze, pRoot->right, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
-  treeWalking(maze, pRoot->down, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
-  treeWalking(maze, pRoot->left, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
-  treeWalking(maze, pRoot->up, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
+  treeWalking(pRoot->right, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
+  treeWalking(pRoot->down, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
+  treeWalking(pRoot->left, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
+  treeWalking(pRoot->up, flag, rotaAtual->length + 1, rotaAtual, rotaFinal, listLevel);
 
   /* Remove posicao da rota atual conforme volta na arvore */
   removePosition(rotaAtual);

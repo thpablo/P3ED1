@@ -23,7 +23,7 @@ int main() {
   /* Dimensoes do Labirinto criacao do labirinto */
   int x, y;
   scanf("%d %d", &x, &y);
-  char flag;  //Flag para escolha do maior ou menor caminho
+  char flag = ' ';  //Flag para escolha do maior ou menor caminho
   scanf(" %c", &flag);
 
   Maze *maze = createMaze(x, y);
@@ -52,7 +52,7 @@ int main() {
   if(arvore->hasExit){
     /*  Percorre a arvore e estabelece o caminho final com base na flag 
         Caminhamento em pre Ordem */
-    treeWalking(maze, arvore, flag, 1, routeAux, finalRoute, listLevels);
+    treeWalking(arvore, flag, 1, routeAux, finalRoute, listLevels);
     /* Insere os pontos no labirinto e mostra trajeto final */
     /* Apresenta tamanho da rota - 1, pois M esta na rota   */
     /* mas nao e considerado como parte do caminho          */
@@ -67,8 +67,11 @@ int main() {
     printf("EPIC FAIL!\n"); 
   
   /* Libera alocacoes */
+  freeLevels(listLevels, highestSizeBranch);
   freeRoute(routeAux);
   freeRoute(finalRoute);
+  freeMaze(maze);
+  freeTree(arvore);
 
   //timeProcess();
 

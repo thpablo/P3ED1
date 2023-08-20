@@ -34,9 +34,12 @@ void find(Maze *maze, struct node *noAtual, Position mousePos, int currentSize, 
 int isValidPosition(Position newPosition, Maze *maze);
 
 // Caminhamento em Pre Ordem para encontrar os caminhos
-void treeWalking(Maze *, Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal, Levels *listLevel);
+void treeWalking(Node *pRoot, char flag, int lengthRoute, Route *rotaAtual, Route *rotaFinal, Levels *listLevel);
 
 // Printa Rota
 void printRoute(Route *, int length);
+
+//LiberaArvore
+void freeTree(Node *root);
 
 #endif // TREE_H

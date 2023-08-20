@@ -76,13 +76,19 @@ void readMaze(Maze *maze) {
 }
 
 void freeMaze(Maze *maze) {
-  for (int i = 0; i < maze->size_row; i++)
-    free(maze->maze[i]);
+    if (maze == NULL) {
+        return;
+    }
 
-  free(maze->maze);
-  free(maze);
+    for (int i = 0; i < maze->size_row; i++) {
+        free(maze->maze[i]);
+        free(maze->visited[i]);
+    }
+
+    free(maze->maze);
+    free(maze->visited);
+    free(maze);
 }
-
 
 // Definições de Route
 Route *createRoute() {

@@ -23,5 +23,6 @@ Levels *initLevels(int size);
 ListPositions *initList(int size);
 void insertInListLevels(Levels* levels, Position position, int index);
 void printLevels(ListPositions* listPosition, int size);
+void freeLevels(Levels *levels);
 
 #endif //   LEVELS_H
